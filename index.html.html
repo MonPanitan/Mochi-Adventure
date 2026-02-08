@@ -241,7 +241,7 @@
       <!-- Tap Heart Mini-game -->
       <div id="screen-mini-tap" class="screen">
         <h2>Mini-Game: Tap the Heart!</h2>
-        <p>Tap the heart 5 times before time runs out!</p>
+        <p>แตะหัวใจ 5 ดวงให้ทันก่อนเวลาจะหมด!</p>
         <div id="tap-heart">💗</div>
         <div id="tap-info" style="font-size: 8px">Taps: 0 / 5</div>
       </div>
@@ -249,7 +249,7 @@
       <!-- Catch Hearts Mini-game -->
       <div id="screen-mini-catch" class="screen">
         <h2>Mini-Game: Catch the Hearts!</h2>
-        <p>Move the basket to catch 5 hearts!</p>
+        <p>ขยับเท้าโมจิเพื่อจับหัวใจ 5 ดวง!</p>
         <div id="catch-area">
           <div id="basket">🐾</div>
         </div>
@@ -261,7 +261,7 @@
       <!-- Maze Mini-game -->
       <div id="screen-mini-maze" class="screen">
         <h2>Mini-Game: Cat Maze!</h2>
-        <p>Use arrow keys or buttons to guide the cat!</p>
+        <p>ขยับ ลูกศร เพื่อพาแมวออกจากเขาวงกต!</p>
         <div id="maze-area">
           <div id="maze-cat">🐱</div>
           <div
@@ -283,9 +283,9 @@
         <div id="love-meter-final">Love Meter: ❤️♡♡♡♡</div>
         <div id="cat-companion-final">😹</div>
         <div id="cat-mood-final" style="font-size: 8px; margin-bottom: 10px">
-          The Mochi Council is watching your final answer…
+          โมจิกำลังดูคำตอบสุดท้ายของทันจิอยู่…
         </div>
-        <h2>🌹 Will you be my Valentine? 🌹</h2>
+        <h2>🌹 ทันจิเป็นวาเลนไทน์ของพี่ไหม? (ตอบจริงๆนะคะ) ขยายความด้วยนะคะ</h2>
 
         <button id="btn-yes">YES 💖</button>
         <button id="no-btn">NO 😢</button>
@@ -308,7 +308,7 @@
           <p>GOLDEN CAT ENDING UNLOCKED!</p>
           <p>Perfect score. Mochi ชื่นชมทันจิมากๆ . 💛</p>
         </div>
-        <button id="btn-restart">เล่นใหม่</button>
+        <button id="btn-restart">ให้เปียกโมจิ!!!</button>
       </div>
     </div>
     <script>
@@ -319,7 +319,7 @@
         "ทันจิชอบแมวไหม?",
         "ทันจิชอบใช้เวลากับพี่ไหม? (ตอบเป็นความจริงนะ) ขยายความด้วยย",
         "ทันจิคิดว่าพี่รักไหม? ขยายความด้วยนะคะ",
-        "ข้อสุดท้ายแล้วนะคะ! โมจิจะถามว่า ทันจิเป็นวาเลนไทน์ของพี่ไหม? (ตอบจริงๆนะคะ) ขยายความด้วยนะคะ",
+        "ข้อสุดท้ายแล้วนะคะ! โมจิจะถามว่า.... ",
       ];
 
       let index = 0;
@@ -664,9 +664,9 @@
         if (success && caught >= 5) {
           score++;
           updateScore();
-          setCatMood("😺", "The cat loves your heart-catching skills!");
+          setCatMood("😺", "โมจิชอบทักษะการจับหัวใจของทันจิมากๆ!");
         } else {
-          setCatMood("😼", "The cat says: 'You missed a few…'");
+          setCatMood("😼", "โมจิพูดว่า: 'พลาดไปบ้างนะ…'");
         }
       }
 
@@ -701,7 +701,7 @@
           mazeActive = false;
           score++;
           updateScore();
-          setCatMood("😺", "The cat navigated the maze like a pro!");
+          setCatMood("😺", "โมจิดีใจทีได้ออกจากเขาวงกต!");
           index++;
           questionText.textContent = questions[index];
           showScreen(screenQuestion);
