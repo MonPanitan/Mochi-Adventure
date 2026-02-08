@@ -1,705 +1,721 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Valentine Quest: Cat Adventure</title>
-
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
-  body {
-    font-family: "Press Start 2P", cursive;
-    background: #f7c6d0;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    text-align: center;
-    overflow: hidden;
-  }
-
-  #cat-sprite {
-    position: fixed;
-    bottom: 10px;
-    left: -100px;
-    font-size: 40px;
-    animation: walk 8s linear infinite;
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  @keyframes walk {
-    0% { left: -100px; }
-    100% { left: 110%; }
-  }
-
-  #game {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    width: 95%;
-    max-width: 420px;
-    border: 4px solid #000;
-    box-shadow: 0 0 0 6px #ff4d6d;
-    position: relative;
-    overflow: hidden;
-    z-index: 2;
-  }
-
-  .screen {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .active {
-    display: flex;
-  }
-
-  h1 {
-    font-size: 12px;
-    margin-bottom: 10px;
-  }
-
-  h2 {
-    font-size: 10px;
-    line-height: 1.4;
-  }
-
-  p {
-    font-size: 8px;
-    line-height: 1.4;
-  }
-
-  button {
-    font-family: "Press Start 2P", cursive;
-    background: #ff4d6d;
-    color: white;
-    border: 3px solid #000;
-    padding: 10px 12px;
-    border-radius: 5px;
-    font-size: 9px;
-    margin-top: 10px;
-    cursor: pointer;
-    width: 100%;
-    text-transform: uppercase;
-  }
-
-  button:hover {
-    background: #ff3355;
-  }
-
-  #score, #love-meter {
-    font-size: 9px;
-    margin-bottom: 5px;
-    color: #ff4d6d;
-  }
-
-  #cat-companion {
-    font-size: 26px;
-    margin-bottom: 5px;
-  }
-
-  #cat-mood {
-    font-size: 8px;
-    margin-bottom: 10px;
-  }
-
-  #answers {
-    margin-top: 10px;
-    width: 100%;
-  }
-
-  #no-btn {
-    position: relative;
-    transition: 0.2s;
-  }
-
-  #tap-heart {
-    font-size: 40px;
-    margin-bottom: 10px;
-  }
-
-  #catch-area {
-    position: relative;
-    width: 100%;
-    height: 120px;
-    border: 2px solid #000;
-    overflow: hidden;
-    background: #ffe6f0;
-    margin-bottom: 10px;
-  }
-
-  .falling-heart {
-    position: absolute;
-    top: -20px;
-    font-size: 18px;
-  }
-
-  #basket {
-    position: absolute;
-    bottom: 5px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 22px;
-  }
-
-  #maze-area {
-    position: relative;
-    width: 100%;
-    height: 120px;
-    border: 2px solid #000;
-    background: #f0f0f0;
-    margin-bottom: 10px;
-    overflow: hidden;
-  }
-
-  #maze-cat {
-    position: absolute;
-    font-size: 22px;
-  }
-
-  .maze-wall {
-    position: absolute;
-    background: #000;
-  }
-
-  #ending-normal, #ending-golden {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .ending-cat {
-    font-size: 40px;
-    margin-bottom: 10px;
-  }
-
-  .golden-cat {
-    font-size: 48px;
-    margin-bottom: 10px;
-  }
-
-  .confetti-heart {
-    position: fixed;
-    top: -20px;
-    font-size: 20px;
-    animation: fall 3s linear forwards;
-    pointer-events: none;
-    z-index: 20;
-  }
-
-  @keyframes fall {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(120vh); }
-  }
-</style>
-</head>
-
-<body>
-    
-<div id="cat-sprite">🐈‍⬛</div>
-
-<div id="game">
-    
-
-  <!-- Title Screen -->
-  <div id="screen-title" class="screen active">
-    <h1>VALENTINE QUEST: MOCHI ADVENTURE</h1>
-    <h2> Welcome Thanchii</h2>
-    <p>Press START to face the Mochi Council and prove your worth as a Valentine.</p>
-    <button id="btn-start">START</button>
-  </div>
-
-  <!-- Question Screen -->
-  <div id="screen-question" class="screen">
-    <div id="score">Score: 0</div>
-    <div id="love-meter">Love Meter: ❤️♡♡♡♡</div>
-    <div id="cat-companion">😺</div>
-    <div id="cat-mood">The Mochi is curious…</div>
-    <h2 id="question-text"></h2>
-    <div id="answers">
-      <button id="answer-1">Yes!</button>
-      <button id="answer-2">Of course!</button>
-    </div>
-    <div id="feedback" style="font-size:9px; min-height:16px;"></div>
-  </div>
-
-  <!-- Tap Heart Mini-game -->
-  <div id="screen-mini-tap" class="screen">
-    <h2>Mini-Game: Tap the Heart!</h2>
-    <p>Tap the heart 5 times before time runs out!</p>
-    <div id="tap-heart">💗</div>
-    <div id="tap-info" style="font-size:8px;">Taps: 0 / 5</div>
-  </div>
-
-  <!-- Catch Hearts Mini-game -->
-  <div id="screen-mini-catch" class="screen">
-    <h2>Mini-Game: Catch the Hearts!</h2>
-    <p>Move the basket to catch 5 hearts!</p>
-    <div id="catch-area">
-      <div id="basket">🐾</div>
-    </div>
-    <div id="catch-info" style="font-size:8px;">Caught: 0 / 5</div>
-    <button id="catch-left">←</button>
-    <button id="catch-right">→</button>
-  </div>
-
-  <!-- Maze Mini-game -->
-  <div id="screen-mini-maze" class="screen">
-    <h2>Mini-Game: Cat Maze!</h2>
-    <p>Use arrow keys or buttons to guide the cat!</p>
-    <div id="maze-area">
-        
-      <div id="maze-cat">🐱</div>
-      <div class="maze-wall" style="left:40%; top:0; width:10px; height:60%;"></div>
-      <div class="maze-wall" style="left:60%; top:40%; width:10px; height:60%;"></div>
-    </div>
-    <button id="maze-left">←</button>
-    <button id="maze-right">→</button>
-  </div>
-
-  <!-- Final Question Screen -->
-  <div id="screen-final" class="screen">
-     
-
-    <div id="score-final">Score: 0</div>
-    <div id="love-meter-final">Love Meter: ❤️♡♡♡♡</div>
-    <div id="cat-companion-final">😹</div>
-    <div id="cat-mood-final" style="font-size:8px; margin-bottom:10px;">
-      The Mochi Council is watching your final answer…
-    </div>
-    <h2>🌹 Will you be my Valentine? 🌹</h2>
-
-    <button id="btn-yes">YES 💖</button>
-    <button id="no-btn">NO 😢</button>
-  </div>
-
-  <!-- Ending Screen -->
-  <div id="screen-ending" class="screen">
-    <div id="ending-normal">
-      <div class="ending-cat">🐱🎉🐱</div>
-      <p>You said YES! The Mochi are celebrating. 
-        You are officially my Valentine. ❤️</p>
-    </div>
-    <div id="ending-golden">
-      <div class="golden-cat">🐱✨</div>
-      <p>GOLDEN CAT ENDING UNLOCKED!</p>
-      <p>Perfect score. The Mochi Council worships you. 💛</p>
-    </div>
-    <button id="btn-restart">PLAY AGAIN</button>
-  </div>
-
-</div>
-<script>
-/* ------------------------------
-   GAME VARIABLES
------------------------------- */
-const questions = [
-  "Do you like cats?",
-  "Do you enjoy spending time with me?",
-  "Do you think I'm cute?",
-  "FINAL LEVEL: Mochi Has One Last Question…"
-];
-
-let index = 0;
-let score = 0;
-let maxScore = questions.length + 3;
-let loveHearts = 1;
-
-/* ------------------------------
-   SCREEN ELEMENTS
------------------------------- */
-const screenTitle = document.getElementById("screen-title");
-const screenQuestion = document.getElementById("screen-question");
-const screenMiniTap = document.getElementById("screen-mini-tap");
-const screenMiniCatch = document.getElementById("screen-mini-catch");
-const screenMiniMaze = document.getElementById("screen-mini-maze");
-const screenFinal = document.getElementById("screen-final");
-const screenEnding = document.getElementById("screen-ending");
-
-/* ------------------------------
-   QUESTION SCREEN ELEMENTS
------------------------------- */
-const scoreEl = document.getElementById("score");
-const loveMeterEl = document.getElementById("love-meter");
-const questionText = document.getElementById("question-text");
-const answer1 = document.getElementById("answer-1");
-const answer2 = document.getElementById("answer-2");
-const feedbackEl = document.getElementById("feedback");
-const catCompanion = document.getElementById("cat-companion");
-const catMood = document.getElementById("cat-mood");
-
-/* ------------------------------
-   FINAL SCREEN ELEMENTS
------------------------------- */
-const scoreFinalEl = document.getElementById("score-final");
-const loveMeterFinalEl = document.getElementById("love-meter-final");
-const catCompanionFinal = document.getElementById("cat-companion-final");
-const catMoodFinal = document.getElementById("cat-mood-final");
-
-const endingNormal = document.getElementById("ending-normal");
-const endingGolden = document.getElementById("ending-golden");
-
-/* ------------------------------
-   BUTTONS
------------------------------- */
-const btnStart = document.getElementById("btn-start");
-const btnYes = document.getElementById("btn-yes");
-const noBtn = document.getElementById("no-btn");
-const btnRestart = document.getElementById("btn-restart");
-
-/* ------------------------------
-   MINI-GAME: TAP HEART
------------------------------- */
-const tapHeart = document.getElementById("tap-heart");
-const tapInfo = document.getElementById("tap-info");
-let tapCount = 0;
-let tapTimer = null;
-
-/* ------------------------------
-   MINI-GAME: CATCH HEARTS
------------------------------- */
-const catchArea = document.getElementById("catch-area");
-const basket = document.getElementById("basket");
-const catchInfo = document.getElementById("catch-info");
-const catchLeftBtn = document.getElementById("catch-left");
-const catchRightBtn = document.getElementById("catch-right");
-let caught = 0;
-let catchInterval = null;
-let basketX = 50;
-
-/* ------------------------------
-   MINI-GAME: MAZE
------------------------------- */
-const mazeArea = document.getElementById("maze-area");
-const mazeCat = document.getElementById("maze-cat");
-const mazeLeftBtn = document.getElementById("maze-left");
-const mazeRightBtn = document.getElementById("maze-right");
-let mazeX = 5;
-let mazeY = 5;
-let mazeActive = false;
-
-/* ------------------------------
-   SCREEN SWITCHING
------------------------------- */
-function showScreen(screen) {
-  [
-    screenTitle,
-    screenQuestion,
-    screenMiniTap,
-    screenMiniCatch,
-    screenMiniMaze,
-    screenFinal,
-    screenEnding
-  ].forEach(s => s.classList.remove("active"));
-  screen.classList.add("active");
-}
-
-/* ------------------------------
-   SCORE + LOVE METER
------------------------------- */
-function updateScore() {
-  scoreEl.textContent = "Score: " + score;
-  loveHearts = Math.min(5, Math.floor((score / maxScore) * 5) || 1);
-  const hearts = "❤️".repeat(loveHearts) + "♡".repeat(5 - loveHearts);
-  loveMeterEl.textContent = "Love Meter: " + hearts;
-}
-
-function updateFinalScore() {
-  scoreFinalEl.textContent = "Score: " + score;
-  const hearts = "❤️".repeat(loveHearts) + "♡".repeat(5 - loveHearts);
-  loveMeterFinalEl.textContent = "Love Meter: " + hearts;
-}
-
-/* ------------------------------
-   CAT MOOD
------------------------------- */
-function setCatMood(emoji, text) {
-  catCompanion.textContent = emoji;
-  catMood.textContent = text;
-}
-
-/* ------------------------------
-   START GAME
------------------------------- */
-btnStart.addEventListener("click", () => {
-  index = 0;
-  score = 0;
-  loveHearts = 1;
-  updateScore();
-  setCatMood("😺", "The cat is excited to begin!");
-  questionText.textContent = questions[index];
-  showScreen(screenQuestion);
-});
-
-/* ------------------------------
-   ANSWER HANDLING
------------------------------- */
-answer1.addEventListener("click", handleAnswer);
-answer2.addEventListener("click", handleAnswer);
-
-function handleAnswer() {
-  score++;
-  updateScore();
-  feedbackEl.textContent = "Correct!";
-  setCatMood("😸", "The cat is pleased with your answer!");
-
-  setTimeout(() => {
-    feedbackEl.textContent = "";
-  }, 800);
-
-  if (index === 0) return startTapMiniGame();
-  if (index === 1) return startCatchMiniGame();
-  if (index === 2) return startMazeMiniGame();
-
-  index++;
-
-  if (index < questions.length) {
-    questionText.textContent = questions[index];
-    if (index === questions.length - 1) {
-      setCatMood("😼", "The Cat Council is watching closely…");
-    }
-  } else {
-    goToFinalQuestion();
-  }
-}
-
-/* ------------------------------
-   FINAL QUESTION
------------------------------- */
-function goToFinalQuestion() {
-  updateFinalScore();
-  catMoodFinal.textContent = "The Mochi is watching your final answer…";
-  showScreen(screenFinal);
-
-  noBtn.addEventListener("mouseover", runaway);
-  noBtn.addEventListener("touchstart", runaway);
-}
-
-function runaway() {
-  const box = screenFinal.getBoundingClientRect();
-  const btnRect = noBtn.getBoundingClientRect();
-
-  const maxX = box.width - btnRect.width - 20;
-  const maxY = box.height - btnRect.height - 20;
-
-  const newX = Math.random() * maxX;
-  const newY = Math.random() * maxY;
-
-  noBtn.style.position = "relative";
-  noBtn.style.left = newX + "px";
-  noBtn.style.top = newY + "px";
-
-  catCompanionFinal.textContent = "😾";
-  catMoodFinal.textContent = "The cat hisses at the NO button!";
-}
-
-/* ------------------------------
-   CONFETTI
------------------------------- */
-function dropHearts(extra = 20) {
-  for (let i = 0; i < extra; i++) {
-    const heart = document.createElement("div");
-    heart.classList.add("confetti-heart");
-    heart.textContent = "💗";
-
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.animationDuration = (2 + Math.random() * 2) + "s";
-
-    document.body.appendChild(heart);
-
-    setTimeout(() => heart.remove(), 4000);
-  }
-}
-
-/* ------------------------------
-   YES BUTTON
------------------------------- */
-btnYes.addEventListener("click", () => {
-  score++;
-  updateScore();
-  updateFinalScore();
-  dropHearts(score === maxScore ? 40 : 20);
-  showScreen(screenEnding);
-
-  if (score === maxScore) {
-    endingNormal.style.display = "none";
-    endingGolden.style.display = "flex";
-  } else {
-    endingNormal.style.display = "flex";
-    endingGolden.style.display = "none";
-  }
-});
-
-/* ------------------------------
-   RESTART
------------------------------- */
-btnRestart.addEventListener("click", () => {
-  showScreen(screenTitle);
-});
-
-/* ------------------------------
-   MINI-GAME: TAP HEART
------------------------------- */
-function startTapMiniGame() {
-  tapCount = 0;
-  tapInfo.textContent = "Taps: 0 / 5";
-  showScreen(screenMiniTap);
-
-  tapHeart.onclick = () => {
-    tapCount++;
-    tapInfo.textContent = "Taps: " + tapCount + " / 5";
-        if (tapCount >= 5) {
-      clearTimeout(tapTimer);
-      score++;
-      updateScore();
-      setCatMood("😺", "The cat is impressed by your tapping!");
-      index++;
-      questionText.textContent = questions[index];
-      showScreen(screenQuestion);
-    }
-  };
-
-  tapTimer = setTimeout(() => {
-    setCatMood("😼", "The cat says: 'Nice try, hooman.'");
-    index++;
-    questionText.textContent = questions[index];
-    showScreen(screenQuestion);
-  }, 4000);
-}
-
-/* ------------------------------
-   MINI-GAME: CATCH HEARTS
------------------------------- */
-function startCatchMiniGame() {
-  caught = 0;
-  catchInfo.textContent = "Caught: 0 / 5";
-  basketX = 50;
-  basket.style.left = basketX + "%";
-  showScreen(screenMiniCatch);
-
-  catchInterval = setInterval(() => {
-    const heart = document.createElement("div");
-    heart.classList.add("falling-heart");
-    heart.textContent = "💗";
-    const startX = Math.random() * 90;
-    heart.style.left = startX + "%";
-    heart.style.top = "-20px";
-    catchArea.appendChild(heart);
-
-    let fall = setInterval(() => {
-      const top = parseInt(heart.style.top || "-20");
-      heart.style.top = top + 5 + "px";
-
-      const heartRect = heart.getBoundingClientRect();
-      const basketRect = basket.getBoundingClientRect();
-
-      if (
-        heartRect.bottom >= basketRect.top &&
-        heartRect.left < basketRect.right &&
-        heartRect.right > basketRect.left
-      ) {
-        caught++;
-        catchInfo.textContent = "Caught: " + caught + " / 5";
-        heart.remove();
-        clearInterval(fall);
-
-        if (caught >= 5) {
-          endCatchMiniGame(true);
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Valentine Quest: Cat Adventure</title>
+
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
+      body {
+        font-family: "Press Start 2P", cursive;
+        background: #f7c6d0;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        text-align: center;
+        overflow: hidden;
+      }
+
+      #cat-sprite {
+        position: fixed;
+        bottom: 10px;
+        left: -100px;
+        font-size: 40px;
+        animation: walk 8s linear infinite;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      @keyframes walk {
+        0% {
+          left: -100px;
+        }
+        100% {
+          left: 110%;
         }
       }
 
-      if (top > 150) {
-        heart.remove();
-        clearInterval(fall);
+      #game {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        width: 95%;
+        max-width: 420px;
+        border: 4px solid #000;
+        box-shadow: 0 0 0 6px #ff4d6d;
+        position: relative;
+        overflow: hidden;
+        z-index: 2;
       }
-    }, 80);
-  }, 500);
 
-  setTimeout(() => {
-    endCatchMiniGame(false);
-  }, 8000);
+      .screen {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+      }
 
-  catchLeftBtn.onclick = () => {
-    basketX = Math.max(5, basketX - 10);
-    basket.style.left = basketX + "%";
-  };
+      .active {
+        display: flex;
+      }
 
-  catchRightBtn.onclick = () => {
-    basketX = Math.min(95, basketX + 10);
-    basket.style.left = basketX + "%";
-  };
-}
+      h1 {
+        font-size: 12px;
+        margin-bottom: 10px;
+      }
 
-function endCatchMiniGame(success) {
-  if (!catchInterval) return;
-  clearInterval(catchInterval);
-  catchInterval = null;
+      h2 {
+        font-size: 10px;
+        line-height: 1.4;
+      }
 
-  index++;
-  questionText.textContent = questions[index];
-  showScreen(screenQuestion);
+      p {
+        font-size: 8px;
+        line-height: 1.4;
+      }
 
-  if (success && caught >= 5) {
-    score++;
-    updateScore();
-    setCatMood("😺", "The cat loves your heart-catching skills!");
-  } else {
-    setCatMood("😼", "The cat says: 'You missed a few…'");
-  }
-}
+      button {
+        font-family: "Press Start 2P", cursive;
+        background: #ff4d6d;
+        color: white;
+        border: 3px solid #000;
+        padding: 10px 12px;
+        border-radius: 5px;
+        font-size: 9px;
+        margin-top: 10px;
+        cursor: pointer;
+        width: 100%;
+        text-transform: uppercase;
+      }
 
-/* ------------------------------
+      button:hover {
+        background: #ff3355;
+      }
+
+      #score,
+      #love-meter {
+        font-size: 9px;
+        margin-bottom: 5px;
+        color: #ff4d6d;
+      }
+
+      #cat-companion {
+        font-size: 26px;
+        margin-bottom: 5px;
+      }
+
+      #cat-mood {
+        font-size: 8px;
+        margin-bottom: 10px;
+      }
+
+      #answers {
+        margin-top: 10px;
+        width: 100%;
+      }
+
+      #no-btn {
+        position: relative;
+        transition: 0.2s;
+      }
+
+      #tap-heart {
+        font-size: 40px;
+        margin-bottom: 10px;
+      }
+
+      #catch-area {
+        position: relative;
+        width: 100%;
+        height: 120px;
+        border: 2px solid #000;
+        overflow: hidden;
+        background: #ffe6f0;
+        margin-bottom: 10px;
+      }
+
+      .falling-heart {
+        position: absolute;
+        top: -20px;
+        font-size: 18px;
+      }
+
+      #basket {
+        position: absolute;
+        bottom: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 22px;
+      }
+
+      #maze-area {
+        position: relative;
+        width: 100%;
+        height: 120px;
+        border: 2px solid #000;
+        background: #f0f0f0;
+        margin-bottom: 10px;
+        overflow: hidden;
+      }
+
+      #maze-cat {
+        position: absolute;
+        font-size: 22px;
+      }
+
+      .maze-wall {
+        position: absolute;
+        background: #000;
+      }
+
+      #ending-normal,
+      #ending-golden {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .ending-cat {
+        font-size: 40px;
+        margin-bottom: 10px;
+      }
+
+      .golden-cat {
+        font-size: 48px;
+        margin-bottom: 10px;
+      }
+
+      .confetti-heart {
+        position: fixed;
+        top: -20px;
+        font-size: 20px;
+        animation: fall 3s linear forwards;
+        pointer-events: none;
+        z-index: 20;
+      }
+
+      @keyframes fall {
+        0% {
+          transform: translateY(0);
+        }
+        100% {
+          transform: translateY(120vh);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="cat-sprite">🐈‍⬛</div>
+
+    <div id="game">
+      <!-- Title Screen -->
+      <div id="screen-title" class="screen active">
+        <h1>VALENTINE QUEST: MOCHI ADVENTURE</h1>
+        <h2>Welcome Thanchii</h2>
+        <p>
+          Press START to face the Mochi Council and prove your worth as a
+          Valentine.
+        </p>
+        <button id="btn-start">START</button>
+      </div>
+
+      <!-- Question Screen -->
+      <div id="screen-question" class="screen">
+        <div id="score">Score: 0</div>
+        <div id="love-meter">Love Meter: ❤️♡♡♡♡</div>
+        <div id="cat-companion">😺</div>
+        <div id="cat-mood">The Mochi is curious…</div>
+        <h2 id="question-text"></h2>
+        <div id="answers">
+          <button id="answer-1">ใช่ใช่ใช่ใช่!</button>
+          <button id="answer-2">นี่แหละๆๆๆ!</button>
+        </div>
+        <div id="feedback" style="font-size: 9px; min-height: 16px"></div>
+      </div>
+
+      <!-- Tap Heart Mini-game -->
+      <div id="screen-mini-tap" class="screen">
+        <h2>Mini-Game: Tap the Heart!</h2>
+        <p>Tap the heart 5 times before time runs out!</p>
+        <div id="tap-heart">💗</div>
+        <div id="tap-info" style="font-size: 8px">Taps: 0 / 5</div>
+      </div>
+
+      <!-- Catch Hearts Mini-game -->
+      <div id="screen-mini-catch" class="screen">
+        <h2>Mini-Game: Catch the Hearts!</h2>
+        <p>Move the basket to catch 5 hearts!</p>
+        <div id="catch-area">
+          <div id="basket">🐾</div>
+        </div>
+        <div id="catch-info" style="font-size: 8px">Caught: 0 / 5</div>
+        <button id="catch-left">←</button>
+        <button id="catch-right">→</button>
+      </div>
+
+      <!-- Maze Mini-game -->
+      <div id="screen-mini-maze" class="screen">
+        <h2>Mini-Game: Cat Maze!</h2>
+        <p>Use arrow keys or buttons to guide the cat!</p>
+        <div id="maze-area">
+          <div id="maze-cat">🐱</div>
+          <div
+            class="maze-wall"
+            style="left: 40%; top: 0; width: 10px; height: 60%"
+          ></div>
+          <div
+            class="maze-wall"
+            style="left: 60%; top: 40%; width: 10px; height: 60%"
+          ></div>
+        </div>
+        <button id="maze-left">←</button>
+        <button id="maze-right">→</button>
+      </div>
+
+      <!-- Final Question Screen -->
+      <div id="screen-final" class="screen">
+        <div id="score-final">Score: 0</div>
+        <div id="love-meter-final">Love Meter: ❤️♡♡♡♡</div>
+        <div id="cat-companion-final">😹</div>
+        <div id="cat-mood-final" style="font-size: 8px; margin-bottom: 10px">
+          The Mochi Council is watching your final answer…
+        </div>
+        <h2>🌹 Will you be my Valentine? 🌹</h2>
+
+        <button id="btn-yes">YES 💖</button>
+        <button id="no-btn">NO 😢</button>
+      </div>
+
+      <!-- Ending Screen -->
+      <div id="screen-ending" class="screen">
+        <div id="ending-normal">
+          <div class="ending-cat">🐱🎉🐱</div>
+          <p>
+            ขอบคุณที่ตอบว่าใช่ใช่ใช่ใช่! โมจิดีใจมากๆเลยที่ทันจิตอบแบบนี้ ❤️
+          </p>
+          <p>
+            พี่ม่อนบอกโมจิว่า
+            พี่ม่อนจะทำให้วันวาเลนไทน์ของทันจิเป็นวันที่พิเศษที่สุด! 🎉
+          </p>
+        </div>
+        <div id="ending-golden">
+          <div class="golden-cat">🐱✨</div>
+          <p>GOLDEN CAT ENDING UNLOCKED!</p>
+          <p>Perfect score. Mochi ชื่นชมทันจิมากๆ . 💛</p>
+        </div>
+        <button id="btn-restart">เล่นใหม่</button>
+      </div>
+    </div>
+    <script>
+      /* ------------------------------
+   GAME VARIABLES
+------------------------------ */
+      const questions = [
+        "ทันจิชอบแมวไหม?",
+        "ทันจิชอบใช้เวลากับพี่ไหม? (ตอบเป็นความจริงนะ) ขยายความด้วยย",
+        "ทันจิคิดว่าพี่รักไหม? ขยายความด้วยนะคะ",
+        "ข้อสุดท้ายแล้วนะคะ! โมจิจะถามว่า ทันจิเป็นวาเลนไทน์ของพี่ไหม? (ตอบจริงๆนะคะ) ขยายความด้วยนะคะ",
+      ];
+
+      let index = 0;
+      let score = 0;
+      let maxScore = questions.length + 3;
+      let loveHearts = 1;
+
+      /* ------------------------------
+   SCREEN ELEMENTS
+------------------------------ */
+      const screenTitle = document.getElementById("screen-title");
+      const screenQuestion = document.getElementById("screen-question");
+      const screenMiniTap = document.getElementById("screen-mini-tap");
+      const screenMiniCatch = document.getElementById("screen-mini-catch");
+      const screenMiniMaze = document.getElementById("screen-mini-maze");
+      const screenFinal = document.getElementById("screen-final");
+      const screenEnding = document.getElementById("screen-ending");
+
+      /* ------------------------------
+   QUESTION SCREEN ELEMENTS
+------------------------------ */
+      const scoreEl = document.getElementById("score");
+      const loveMeterEl = document.getElementById("love-meter");
+      const questionText = document.getElementById("question-text");
+      const answer1 = document.getElementById("answer-1");
+      const answer2 = document.getElementById("answer-2");
+      const feedbackEl = document.getElementById("feedback");
+      const catCompanion = document.getElementById("cat-companion");
+      const catMood = document.getElementById("cat-mood");
+
+      /* ------------------------------
+   FINAL SCREEN ELEMENTS
+------------------------------ */
+      const scoreFinalEl = document.getElementById("score-final");
+      const loveMeterFinalEl = document.getElementById("love-meter-final");
+      const catCompanionFinal = document.getElementById("cat-companion-final");
+      const catMoodFinal = document.getElementById("cat-mood-final");
+
+      const endingNormal = document.getElementById("ending-normal");
+      const endingGolden = document.getElementById("ending-golden");
+
+      /* ------------------------------
+   BUTTONS
+------------------------------ */
+      const btnStart = document.getElementById("btn-start");
+      const btnYes = document.getElementById("btn-yes");
+      const noBtn = document.getElementById("no-btn");
+      const btnRestart = document.getElementById("btn-restart");
+
+      /* ------------------------------
+   MINI-GAME: TAP HEART
+------------------------------ */
+      const tapHeart = document.getElementById("tap-heart");
+      const tapInfo = document.getElementById("tap-info");
+      let tapCount = 0;
+      let tapTimer = null;
+
+      /* ------------------------------
+   MINI-GAME: CATCH HEARTS
+------------------------------ */
+      const catchArea = document.getElementById("catch-area");
+      const basket = document.getElementById("basket");
+      const catchInfo = document.getElementById("catch-info");
+      const catchLeftBtn = document.getElementById("catch-left");
+      const catchRightBtn = document.getElementById("catch-right");
+      let caught = 0;
+      let catchInterval = null;
+      let basketX = 50;
+
+      /* ------------------------------
+   MINI-GAME: MAZE
+------------------------------ */
+      const mazeArea = document.getElementById("maze-area");
+      const mazeCat = document.getElementById("maze-cat");
+      const mazeLeftBtn = document.getElementById("maze-left");
+      const mazeRightBtn = document.getElementById("maze-right");
+      let mazeX = 5;
+      let mazeY = 5;
+      let mazeActive = false;
+
+      /* ------------------------------
+   SCREEN SWITCHING
+------------------------------ */
+      function showScreen(screen) {
+        [
+          screenTitle,
+          screenQuestion,
+          screenMiniTap,
+          screenMiniCatch,
+          screenMiniMaze,
+          screenFinal,
+          screenEnding,
+        ].forEach((s) => s.classList.remove("active"));
+        screen.classList.add("active");
+      }
+
+      /* ------------------------------
+   SCORE + LOVE METER
+------------------------------ */
+      function updateScore() {
+        scoreEl.textContent = "Score: " + score;
+        loveHearts = Math.min(5, Math.floor((score / maxScore) * 5) || 1);
+        const hearts = "❤️".repeat(loveHearts) + "♡".repeat(5 - loveHearts);
+        loveMeterEl.textContent = "Love Meter: " + hearts;
+      }
+
+      function updateFinalScore() {
+        scoreFinalEl.textContent = "Score: " + score;
+        const hearts = "❤️".repeat(loveHearts) + "♡".repeat(5 - loveHearts);
+        loveMeterFinalEl.textContent = "Love Meter: " + hearts;
+      }
+
+      /* ------------------------------
+   CAT MOOD
+------------------------------ */
+      function setCatMood(emoji, text) {
+        catCompanion.textContent = emoji;
+        catMood.textContent = text;
+      }
+
+      /* ------------------------------
+   START GAME
+------------------------------ */
+      btnStart.addEventListener("click", () => {
+        index = 0;
+        score = 0;
+        loveHearts = 1;
+        updateScore();
+        setCatMood("😺", "โมจิตื่นเต้นมากๆเลย ที่ทันจิจะตอบคำถาม!");
+        questionText.textContent = questions[index];
+        showScreen(screenQuestion);
+      });
+
+      /* ------------------------------
+   ANSWER HANDLING
+------------------------------ */
+      answer1.addEventListener("click", handleAnswer);
+      answer2.addEventListener("click", handleAnswer);
+
+      function handleAnswer() {
+        score++;
+        updateScore();
+        feedbackEl.textContent = "Correct!";
+        setCatMood("😸", "โมจิชอบคำตอบของทันจิมากๆ!");
+
+        setTimeout(() => {
+          feedbackEl.textContent = "";
+        }, 800);
+
+        if (index === 0) return startTapMiniGame();
+        if (index === 1) return startCatchMiniGame();
+        if (index === 2) return startMazeMiniGame();
+
+        index++;
+
+        if (index < questions.length) {
+          questionText.textContent = questions[index];
+          if (index === questions.length - 1) {
+            setCatMood("😼", "โมจิรู้ว่าทันจิกำลังคิดคำตอบสุดท้ายอยู่…");
+          }
+        } else {
+          goToFinalQuestion();
+        }
+      }
+
+      /* ------------------------------
+   FINAL QUESTION
+------------------------------ */
+      function goToFinalQuestion() {
+        updateFinalScore();
+        catMoodFinal.textContent = "โมจิกำลังดูคำตอบสุดท้ายของทันจิอยู่…";
+        showScreen(screenFinal);
+
+        noBtn.addEventListener("mouseover", runaway);
+        noBtn.addEventListener("touchstart", runaway);
+      }
+
+      function runaway() {
+        const box = screenFinal.getBoundingClientRect();
+        const btnRect = noBtn.getBoundingClientRect();
+
+        const maxX = box.width - btnRect.width - 20;
+        const maxY = box.height - btnRect.height - 20;
+
+        const newX = Math.random() * maxX;
+        const newY = Math.random() * maxY;
+
+        noBtn.style.position = "relative";
+        noBtn.style.left = newX + "px";
+        noBtn.style.top = newY + "px";
+
+        catCompanionFinal.textContent = "😾";
+        catMoodFinal.textContent = "โมจิขู่ปุ่ม NO!";
+      }
+
+      /* ------------------------------
+   CONFETTI
+------------------------------ */
+      function dropHearts(extra = 20) {
+        for (let i = 0; i < extra; i++) {
+          const heart = document.createElement("div");
+          heart.classList.add("confetti-heart");
+          heart.textContent = "💗";
+
+          heart.style.left = Math.random() * 100 + "vw";
+          heart.style.animationDuration = 2 + Math.random() * 2 + "s";
+
+          document.body.appendChild(heart);
+
+          setTimeout(() => heart.remove(), 4000);
+        }
+      }
+
+      /* ------------------------------
+   YES BUTTON
+------------------------------ */
+      btnYes.addEventListener("click", () => {
+        score++;
+        updateScore();
+        updateFinalScore();
+        dropHearts(score === maxScore ? 40 : 20);
+        showScreen(screenEnding);
+
+        if (score === maxScore) {
+          endingNormal.style.display = "none";
+          endingGolden.style.display = "flex";
+        } else {
+          endingNormal.style.display = "flex";
+          endingGolden.style.display = "none";
+        }
+      });
+
+      /* ------------------------------
+   RESTART
+------------------------------ */
+      btnRestart.addEventListener("click", () => {
+        showScreen(screenTitle);
+      });
+
+      /* ------------------------------
+   MINI-GAME: TAP HEART
+------------------------------ */
+      function startTapMiniGame() {
+        tapCount = 0;
+        tapInfo.textContent = "Taps: 0 / 5";
+        showScreen(screenMiniTap);
+
+        tapHeart.onclick = () => {
+          tapCount++;
+          tapInfo.textContent = "Taps: " + tapCount + " / 5";
+          if (tapCount >= 5) {
+            clearTimeout(tapTimer);
+            score++;
+            updateScore();
+            setCatMood("😺", "โมจิชอบการตอบคำถามของทันจิมากๆ!");
+            index++;
+            questionText.textContent = questions[index];
+            showScreen(screenQuestion);
+          }
+        };
+
+        tapTimer = setTimeout(() => {
+          setCatMood("😼", "โมจิพูดว่า: 'พยายามดีมากนะ!' ");
+          index++;
+          questionText.textContent = questions[index];
+          showScreen(screenQuestion);
+        }, 4000);
+      }
+
+      /* ------------------------------
+   MINI-GAME: CATCH HEARTS
+------------------------------ */
+      function startCatchMiniGame() {
+        caught = 0;
+        catchInfo.textContent = "Caught: 0 / 5";
+        basketX = 50;
+        basket.style.left = basketX + "%";
+        showScreen(screenMiniCatch);
+
+        catchInterval = setInterval(() => {
+          const heart = document.createElement("div");
+          heart.classList.add("falling-heart");
+          heart.textContent = "💗";
+          const startX = Math.random() * 90;
+          heart.style.left = startX + "%";
+          heart.style.top = "-20px";
+          catchArea.appendChild(heart);
+
+          let fall = setInterval(() => {
+            const top = parseInt(heart.style.top || "-20");
+            heart.style.top = top + 5 + "px";
+
+            const heartRect = heart.getBoundingClientRect();
+            const basketRect = basket.getBoundingClientRect();
+
+            if (
+              heartRect.bottom >= basketRect.top &&
+              heartRect.left < basketRect.right &&
+              heartRect.right > basketRect.left
+            ) {
+              caught++;
+              catchInfo.textContent = "Caught: " + caught + " / 5";
+              heart.remove();
+              clearInterval(fall);
+
+              if (caught >= 5) {
+                endCatchMiniGame(true);
+              }
+            }
+
+            if (top > 150) {
+              heart.remove();
+              clearInterval(fall);
+            }
+          }, 80);
+        }, 500);
+
+        setTimeout(() => {
+          endCatchMiniGame(false);
+        }, 8000);
+
+        catchLeftBtn.onclick = () => {
+          basketX = Math.max(5, basketX - 10);
+          basket.style.left = basketX + "%";
+        };
+
+        catchRightBtn.onclick = () => {
+          basketX = Math.min(95, basketX + 10);
+          basket.style.left = basketX + "%";
+        };
+      }
+
+      function endCatchMiniGame(success) {
+        if (!catchInterval) return;
+        clearInterval(catchInterval);
+        catchInterval = null;
+
+        index++;
+        questionText.textContent = questions[index];
+        showScreen(screenQuestion);
+
+        if (success && caught >= 5) {
+          score++;
+          updateScore();
+          setCatMood("😺", "The cat loves your heart-catching skills!");
+        } else {
+          setCatMood("😼", "The cat says: 'You missed a few…'");
+        }
+      }
+
+      /* ------------------------------
    MINI-GAME: MAZE (FIXED)
 ------------------------------ */
-function startMazeMiniGame() {
-  mazeX = 5;
-  mazeY = mazeArea.clientHeight - 35;
-  mazeCat.style.left = mazeX + "px";
-  mazeCat.style.top = mazeY + "px";
-  mazeActive = true;
-  showScreen(screenMiniMaze);
+      function startMazeMiniGame() {
+        mazeX = 5;
+        mazeY = mazeArea.clientHeight - 35;
+        mazeCat.style.left = mazeX + "px";
+        mazeCat.style.top = mazeY + "px";
+        mazeActive = true;
+        showScreen(screenMiniMaze);
 
-  mazeLeftBtn.onclick = () => moveMazeCat(-10, 0);
-  mazeRightBtn.onclick = () => moveMazeCat(10, 0);
-}
+        mazeLeftBtn.onclick = () => moveMazeCat(-10, 0);
+        mazeRightBtn.onclick = () => moveMazeCat(10, 0);
+      }
 
-function moveMazeCat(dx, dy) {
-  if (!mazeActive) return;
+      function moveMazeCat(dx, dy) {
+        if (!mazeActive) return;
 
-  mazeX += dx;
-  mazeY += dy;
+        mazeX += dx;
+        mazeY += dy;
 
-  mazeX = Math.max(0, Math.min(mazeArea.clientWidth - 24, mazeX));
-  mazeY = Math.max(0, Math.min(mazeArea.clientHeight - 24, mazeY));
+        mazeX = Math.max(0, Math.min(mazeArea.clientWidth - 24, mazeX));
+        mazeY = Math.max(0, Math.min(mazeArea.clientHeight - 24, mazeY));
 
-  mazeCat.style.left = mazeX + "px";
-  mazeCat.style.top = mazeY + "px";
+        mazeCat.style.left = mazeX + "px";
+        mazeCat.style.top = mazeY + "px";
 
-  if (mazeX > mazeArea.clientWidth - 40) {
-    mazeActive = false;
-    score++;
-    updateScore();
-    setCatMood("😺", "The cat navigated the maze like a pro!");
-    index++;
-    questionText.textContent = questions[index];
-    showScreen(screenQuestion);
-  }
-}
+        if (mazeX > mazeArea.clientWidth - 40) {
+          mazeActive = false;
+          score++;
+          updateScore();
+          setCatMood("😺", "The cat navigated the maze like a pro!");
+          index++;
+          questionText.textContent = questions[index];
+          showScreen(screenQuestion);
+        }
+      }
 
-document.addEventListener("keydown", (e) => {
-  if (!mazeActive) return;
+      document.addEventListener("keydown", (e) => {
+        if (!mazeActive) return;
 
-  if (e.key === "ArrowLeft") moveMazeCat(-10, 0);
-  if (e.key === "ArrowRight") moveMazeCat(10, 0);
-  if (e.key === "ArrowUp") moveMazeCat(0, -10);
-  if (e.key === "ArrowDown") moveMazeCat(0, 10);
-});
-</script>
-
-</body>
+        if (e.key === "ArrowLeft") moveMazeCat(-10, 0);
+        if (e.key === "ArrowRight") moveMazeCat(10, 0);
+        if (e.key === "ArrowUp") moveMazeCat(0, -10);
+        if (e.key === "ArrowDown") moveMazeCat(0, 10);
+      });
+    </script>
+  </body>
 </html>
